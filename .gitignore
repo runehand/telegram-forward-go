@@ -1,0 +1,16 @@
+# Local env/config
+.env
+
+# Telegram session/runtime artifacts
+session.json
+telegram_app.info
+
+# Binaries
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Build/cache
+bin/
+dist/

@@ -30,7 +30,7 @@ Copy `.env.example` and fill values:
 
 ```bash
 go mod tidy
-go run .
+go run ./cmd/server
 ```
 
 On first run, Telegram asks for login code and maybe 2FA password in terminal.
@@ -39,3 +39,12 @@ On first run, Telegram asks for login code and maybe 2FA password in terminal.
 
 - Targets must be resolvable usernames.
 - If Telegram rate limits (`FLOOD_WAIT`), forwarding retries are not automatic in this minimal version.
+
+## Project Structure
+
+```text
+cmd/server/main.go                  # app entrypoint
+internal/app/run.go                 # app bootstrap (logger, signals)
+internal/config/config.go           # environment config loading
+internal/telegram/forwarder         # telegram forwarder domain/service
+```

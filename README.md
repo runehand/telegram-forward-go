@@ -48,3 +48,30 @@ internal/app/run.go                 # app bootstrap (logger, signals)
 internal/config/config.go           # environment config loading
 internal/telegram/forwarder         # telegram forwarder domain/service
 ```
+
+## GitHub Flow
+
+This repository follows an issue-first workflow.
+
+1. Create an issue for each feature/bug/chore.
+2. Create a branch from `main`:
+   - `feat/<issue-number>-<slug>`
+   - `fix/<issue-number>-<slug>`
+   - `chore/<issue-number>-<slug>`
+3. Implement change and commit.
+4. Push branch and open PR with `Closes #<issue-number>`.
+5. Review and merge PR (recommended: squash merge).
+
+### GitHub CLI Setup
+
+If `gh` is not authenticated:
+
+```powershell
+& "C:\Program Files\GitHub CLI\gh.exe" auth login
+```
+
+Recommended options:
+
+- `GitHub.com`
+- `HTTPS`
+- `Login with a web browser`

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"zenfl-forwarder/internal/app"
-	"zenfl-forwarder/internal/config"
+	"zenfl-forwarder/backend/internal/app"
+	"zenfl-forwarder/backend/internal/config"
 )
 
 func main() {
@@ -14,7 +14,6 @@ func main() {
 		fmt.Fprintf(os.Stderr, "config error: %v\n", err)
 		os.Exit(1)
 	}
-
 	if err := app.Run(cfg); err != nil {
 		fmt.Fprintf(os.Stderr, "app error: %v\n", err)
 		os.Exit(1)

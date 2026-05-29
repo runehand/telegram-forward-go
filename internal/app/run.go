@@ -7,14 +7,13 @@ import (
 	"os/signal"
 	"syscall"
 
-	"go.uber.org/zap"
-
 	"zenfl-forwarder/internal/config"
+	"zenfl-forwarder/internal/platform/logx"
 	"zenfl-forwarder/internal/telegram/forwarder"
 )
 
 func Run(cfg config.Config) error {
-	logger, err := zap.NewProduction()
+	logger, err := logx.New()
 	if err != nil {
 		return err
 	}

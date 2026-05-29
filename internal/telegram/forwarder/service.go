@@ -79,15 +79,16 @@ func (s *Service) handleMessage(ctx context.Context, msg tg.MessageClass) error 
 	}
 	s.log.Info("received zenfl message", messageLogFields(m)...)
 	s.logRawMessageJSON(m)
-
-	outgoingText := buildOutgoingText(m)
+	outgoingText := buildOutgoingTextWithJobLink(m)
 
 	for _, t := range s.targets {
 		randomID := rand.New(rand.NewSource(time.Now().UnixNano())).Int63()
 		_, err := s.api.MessagesSendMessage(ctx, &tg.MessagesSendMessageRequest{
-			Peer:     t.Peer,
-			Message:  outgoingText,
-			RandomID: randomID,
+			Peer:        t.Peer,
+			Message:     outgoingText,
+			Entities:    m.Entities,
+			ReplyMarkup: nil,
+			RandomID:    randomID,
 		})
 		if err != nil {
 			if tgerr.Is(err, "FLOOD_WAIT") {
@@ -132,33 +133,6 @@ func messageLogFields(m *tg.Message) []zap.Field {
 	return fields
 }
 
-func buildOutgoingText(m *tg.Message) string {
-	base := strings.TrimSpace(m.Message)
-	link := extractFirstURLButtonLink(m.ReplyMarkup)
-	if link == "" {
-		return base
-	}
-	if strings.Contains(base, link) {
-		return base
-	}
-	return base + "\n\nOpen job: " + link
-}
-
-func extractFirstURLButtonLink(markup tg.ReplyMarkupClass) string {
-	inline, ok := markup.(*tg.ReplyInlineMarkup)
-	if !ok {
-		return ""
-	}
-	for _, row := range inline.Rows {
-		for _, btn := range row.Buttons {
-			if u, ok := btn.(*tg.KeyboardButtonURL); ok {
-				return strings.TrimSpace(u.URL)
-			}
-		}
-	}
-	return ""
-}
-
 func peerToString(peer tg.PeerClass) string {
 	if peer == nil {
 		return "<nil>"
@@ -193,6 +167,33 @@ func typeName(v interface{}) string {
 
 func repliesCount(r tg.MessageReplies) int {
 	return r.Replies
+}
+
+func buildOutgoingTextWithJobLink(m *tg.Message) string {
+	base := strings.TrimRight(m.Message, "\n \t")
+	link := extractFirstURLButtonLink(m.ReplyMarkup)
+	if link == "" {
+		return base
+	}
+	if strings.Contains(base, link) {
+		return base
+	}
+	return base + "\n\nUpwork job link: " + link
+}
+
+func extractFirstURLButtonLink(markup tg.ReplyMarkupClass) string {
+	inline, ok := markup.(*tg.ReplyInlineMarkup)
+	if !ok {
+		return ""
+	}
+	for _, row := range inline.Rows {
+		for _, btn := range row.Buttons {
+			if u, ok := btn.(*tg.KeyboardButtonURL); ok {
+				return strings.TrimSpace(u.URL)
+			}
+		}
+	}
+	return ""
 }
 
 func extractSenderID(m *tg.Message) int64 {

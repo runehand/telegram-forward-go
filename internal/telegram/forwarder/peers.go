@@ -30,7 +30,9 @@ func (s *Service) resolvePeers(ctx context.Context) error {
 }
 
 func (s *Service) resolveUsernameToPeer(ctx context.Context, username string) (tg.InputPeerClass, int64, error) {
-	resolved, err := s.api.ContactsResolveUsername(ctx, username)
+	resolved, err := s.api.ContactsResolveUsername(ctx, &tg.ContactsResolveUsernameRequest{
+		Username: username,
+	})
 	if err != nil {
 		return nil, 0, err
 	}

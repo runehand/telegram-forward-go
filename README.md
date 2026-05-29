@@ -35,6 +35,11 @@ go run ./cmd/server
 
 On first run, Telegram asks for login code and maybe 2FA password in terminal.
 
+## Logging
+
+- Default output is pretty console logs (colored level + compact style).
+- For machine-readable logs, set `LOG_FORMAT=json`.
+
 ## Notes
 
 - Targets must be resolvable usernames.

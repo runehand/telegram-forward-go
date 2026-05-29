@@ -1,8 +1,10 @@
 package config
 
 import (
+	"bufio"
 	"errors"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 )
@@ -21,6 +23,8 @@ type TelegramConfig struct {
 }
 
 func LoadFromEnv() (Config, error) {
+	_ = loadDotEnv(".env")
+
 	apiID, err := strconv.Atoi(strings.TrimSpace(os.Getenv("TG_API_ID")))
 	if err != nil || apiID == 0 {
 		return Config{}, errors.New("TG_API_ID is required and must be an integer")
@@ -81,4 +85,46 @@ func normalizeUsername(v string) string {
 	s = strings.TrimPrefix(s, "t.me/")
 	s = strings.TrimPrefix(s, "@")
 	return s
+}
+
+func loadDotEnv(path string) error {
+	abs, err := filepath.Abs(path)
+	if err != nil {
+		return err
+	}
+
+	f, err := os.Open(abs)
+	if err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			return nil
+		}
+		return err
+	}
+	defer f.Close()
+
+	scanner := bufio.NewScanner(f)
+	for scanner.Scan() {
+		line := strings.TrimSpace(scanner.Text())
+		if line == "" || strings.HasPrefix(line, "#") {
+			continue
+		}
+
+		parts := strings.SplitN(line, "=", 2)
+		if len(parts) != 2 {
+			continue
+		}
+		key := strings.TrimSpace(parts[0])
+		val := strings.TrimSpace(parts[1])
+		val = strings.Trim(val, "\"")
+		val = strings.Trim(val, "'")
+		if key == "" {
+			continue
+		}
+		if _, exists := os.LookupEnv(key); exists {
+			continue
+		}
+		_ = os.Setenv(key, val)
+	}
+
+	return scanner.Err()
 }

@@ -1,29 +1,346 @@
 :root {
-  --bg: #0f172a;
-  --bg2: #1e293b;
-  --card: #111827;
-  --line: #334155;
-  --text: #e5e7eb;
-  --muted: #94a3b8;
-  --accent: #22c55e;
-  --danger: #ef4444;
+  --bg: #0f1115;
+  --panel: #14171c;
+  --panel-2: #1b2028;
+  --line: #2a313d;
+  --text: #e9edf3;
+  --muted: #98a2b3;
+  --accent: #14a800;
+  --accent-2: #0f8c00;
+  --danger: #ff6b6b;
+  --link: #8cb7ff;
+  --shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
 }
-* { box-sizing: border-box; }
-body { margin: 0; font-family: 'Segoe UI', Tahoma, sans-serif; color: var(--text); background: radial-gradient(circle at 0% 0%, var(--bg2), var(--bg)); }
-.page { max-width: 960px; margin: 0 auto; padding: 24px; }
-.topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
-h1 { margin: 0; }
-.card { background: color-mix(in srgb, var(--card) 88%, black); border: 1px solid var(--line); border-radius: 14px; padding: 16px; }
-label { display: grid; gap: 6px; margin-bottom: 10px; }
-input { background: #0b1220; border: 1px solid var(--line); color: var(--text); border-radius: 10px; padding: 10px; }
-button { border: 0; border-radius: 10px; padding: 10px 14px; background: var(--accent); color: #052e16; font-weight: 700; cursor: pointer; }
-button:disabled { opacity: 0.7; cursor: default; }
-.hint { color: var(--muted); margin-bottom: 0; }
-.error { color: var(--danger); font-weight: 600; }
-.sectionHead { display: flex; justify-content: space-between; align-items: center; }
-.jobs { margin-top: 12px; display: grid; gap: 10px; }
-.job { border: 1px solid var(--line); border-radius: 10px; padding: 12px; background: #0b1220; }
-.meta { color: var(--muted); margin: 0 0 6px; }
-pre { margin: 0; white-space: pre-wrap; word-break: break-word; font-family: inherit; }
-a { color: #93c5fd; display: inline-block; margin-top: 10px; }
-@media (max-width: 640px) { .page { padding: 14px; } .sectionHead { gap: 10px; flex-direction: column; align-items: flex-start; } }
+
+* {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  color: var(--text);
+  background:
+    radial-gradient(circle at top left, rgba(20, 168, 0, 0.12), transparent 24rem),
+    linear-gradient(180deg, #101318, #0c0e12 55%);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+.loginShell {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 2rem;
+}
+
+.loginCard {
+  width: min(72rem, 100%);
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 2rem;
+  background: rgba(20, 23, 28, 0.92);
+  border: 1px solid var(--line);
+  border-radius: 1.5rem;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.brandBlock,
+.formGrid,
+.sidebar,
+.jobListPanel,
+.jobDetailPanel,
+.panel {
+  padding: 1.5rem;
+}
+
+.brandBlock {
+  background:
+    linear-gradient(160deg, rgba(20, 168, 0, 0.15), transparent 45%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.brandBlock h1,
+.emptyState h2,
+.sectionHeader h2,
+.detailHeader h2 {
+  margin: 0 0 0.75rem;
+  line-height: 1.05;
+}
+
+.brandBlock h1 {
+  font-size: clamp(2.2rem, 5vw, 3.7rem);
+  max-width: 12ch;
+}
+
+.brandBlock p,
+.emptyState p,
+.hint,
+.metaLine,
+.userRow p {
+  color: var(--muted);
+}
+
+.eyebrow {
+  display: inline-block;
+  margin: 0 0 0.75rem;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.formGrid,
+.filterBlock,
+.detailSection,
+.panel {
+  display: grid;
+  gap: 0.9rem;
+}
+
+label {
+  display: grid;
+  gap: 0.4rem;
+  font-size: 0.94rem;
+}
+
+input,
+select {
+  width: 100%;
+  border-radius: 0.8rem;
+  border: 1px solid var(--line);
+  background: #0d1014;
+  color: var(--text);
+  padding: 0.8rem 0.9rem;
+}
+
+.primaryButton,
+.ghostButton,
+.tab,
+.jobCard {
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.primaryButton {
+  background: linear-gradient(180deg, var(--accent), var(--accent-2));
+  color: #041304;
+  font-weight: 700;
+  padding: 0.85rem 1.15rem;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ghostButton,
+.tab {
+  background: #1a1f27;
+  color: var(--text);
+  border: 1px solid var(--line);
+  padding: 0.72rem 1rem;
+}
+
+.appShell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 20rem 1fr;
+}
+
+.sidebar {
+  border-right: 1px solid var(--line);
+  background: rgba(12, 14, 18, 0.88);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.sidebarTop,
+.sectionHeader,
+.detailHeader,
+.jobCardTop,
+.userRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.userCard,
+.jobCard,
+.jobDetailPanel,
+.jobListPanel,
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+}
+
+.userCard {
+  display: grid;
+  gap: 0.25rem;
+  border-radius: 1rem;
+  padding: 1rem;
+}
+
+.toggle {
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.toggle input {
+  width: 1rem;
+  height: 1rem;
+}
+
+.adminNav {
+  display: flex;
+  gap: 0.65rem;
+}
+
+.tab.active,
+.jobCard.active {
+  border-color: rgba(20, 168, 0, 0.55);
+  background: linear-gradient(180deg, rgba(20, 168, 0, 0.08), rgba(20, 168, 0, 0.02));
+}
+
+.content {
+  padding: 1.4rem;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: minmax(22rem, 32rem) minmax(0, 1fr);
+  gap: 1.2rem;
+}
+
+.jobListPanel,
+.jobDetailPanel,
+.panel {
+  border-radius: 1.2rem;
+}
+
+.jobList {
+  display: grid;
+  gap: 0.85rem;
+  margin-top: 1rem;
+}
+
+.jobCard {
+  text-align: left;
+  padding: 1rem;
+  border-radius: 1.1rem;
+}
+
+.jobCard h3,
+.panel h3 {
+  margin: 0;
+}
+
+.chipRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 0.8rem;
+}
+
+.chip {
+  padding: 0.28rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: #10141a;
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.chip.accent {
+  color: #b8ff9d;
+  border-color: rgba(20, 168, 0, 0.45);
+  background: rgba(20, 168, 0, 0.12);
+}
+
+.detailMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  color: var(--muted);
+  margin-bottom: 1.1rem;
+}
+
+.detailSection pre {
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: inherit;
+  line-height: 1.55;
+  color: #d8dee8;
+}
+
+.questionList {
+  margin: 0;
+  padding-left: 1.2rem;
+  color: #d8dee8;
+}
+
+.linkButton {
+  min-width: 11rem;
+}
+
+.adminGrid {
+  display: grid;
+  grid-template-columns: minmax(18rem, 22rem) 1fr;
+  gap: 1rem;
+}
+
+.userList {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.userRow {
+  padding: 0.95rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.userRow:last-child {
+  border-bottom: 0;
+}
+
+.emptyState,
+.adminPanel {
+  display: grid;
+  gap: 1rem;
+}
+
+.errorText {
+  color: var(--danger);
+  font-weight: 600;
+}
+
+@media (max-width: 1080px) {
+  .appShell,
+  .loginCard,
+  .board,
+  .adminGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .content {
+    padding-top: 0;
+  }
+}
+

@@ -6,9 +6,9 @@ Monorepo for a Telegram-to-job-board platform.
 
 - Telegram personal-account listener (Zenfl messages)
 - Message forwarding to configured users
-- Message persistence to MongoDB
-- REST API with demo auth
-- React + Vite demo job-board frontend
+- Parsed job persistence to MongoDB
+- REST API with role-based demo auth
+- Unseen-first job board and admin user management frontend
 
 ## Dev Run
 
@@ -31,10 +31,12 @@ This runs:
 - Go backend from `apps/backend`
 - Vite frontend from `apps/frontend`
 
-Demo API auth user (auto-created at backend startup):
+Demo API users (auto-created at backend startup):
 
 - `demo@zenfl.local`
 - `demo1234`
+- `admin@zenfl.local`
+- `admin1234`
 
 ## API Endpoints
 
@@ -42,6 +44,11 @@ Demo API auth user (auto-created at backend startup):
 - `POST /api/auth/login`
 - `GET /api/auth/me` (Bearer token)
 - `GET /api/jobs` (Bearer token)
+- `GET /api/jobs/:id` (marks job seen)
+- `POST /api/jobs/:id/seen`
+- `GET /api/admin/users` (admin)
+- `POST /api/admin/users` (admin)
+- `PATCH /api/admin/users/:id` (admin)
 
 ## Individual Run
 

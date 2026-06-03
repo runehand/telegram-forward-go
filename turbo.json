@@ -9,6 +9,9 @@
       "dependsOn": [
         "^build"
       ],
+      "outputs": []
+    },
+    "@zenfl/frontend#build": {
       "outputs": [
         "dist/**"
       ]

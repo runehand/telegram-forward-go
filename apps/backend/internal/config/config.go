@@ -25,6 +25,7 @@ type MongoConfig struct {
 	Database   string
 	Collection string
 	UsersColl  string
+	SeenColl   string
 }
 
 type AuthConfig struct {
@@ -50,6 +51,7 @@ func LoadFromEnv() (Config, error) {
 			Database:   envOrDefault("MONGO_DB", "zenfl"),
 			Collection: envOrDefault("MONGO_MESSAGES_COLLECTION", "job_messages"),
 			UsersColl:  envOrDefault("MONGO_USERS_COLLECTION", "users"),
+			SeenColl:   envOrDefault("MONGO_SEEN_COLLECTION", "user_seen_jobs"),
 		},
 		Auth: AuthConfig{JWTSecret: envOrDefault("AUTH_JWT_SECRET", "change-me")},
 	}

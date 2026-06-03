@@ -1,0 +1,9 @@
+{
+  "name": "@zenfl/backend",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "powershell -NoProfile -Command \"New-Item -ItemType Directory -Force ../../.cache/go-build | Out-Null; $env:GOCACHE=(Resolve-Path ../../.cache/go-build).Path; go run ./cmd/server\"",
+    "build": "powershell -NoProfile -Command \"New-Item -ItemType Directory -Force ../../.cache/go-build | Out-Null; $env:GOCACHE=(Resolve-Path ../../.cache/go-build).Path; go build ./cmd/server\""
+  }
+}

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"zenfl-forwarder/backend/internal/app"
-	"zenfl-forwarder/backend/internal/config"
+	"zenfl-forwarder/apps/backend/internal/app"
+	"zenfl-forwarder/apps/backend/internal/config"
 )
 
 func main() {

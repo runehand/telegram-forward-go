@@ -12,8 +12,8 @@ import (
 	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
 
-	"zenfl-forwarder/backend/internal/config"
-	"zenfl-forwarder/backend/internal/store/mongo"
+	"zenfl-forwarder/apps/backend/internal/config"
+	"zenfl-forwarder/apps/backend/internal/store/mongo"
 )
 
 type Server struct {

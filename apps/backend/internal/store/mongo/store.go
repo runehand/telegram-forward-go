@@ -9,8 +9,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
-	"zenfl-forwarder/backend/internal/config"
-	"zenfl-forwarder/backend/internal/domain"
+	"zenfl-forwarder/apps/backend/internal/config"
+	"zenfl-forwarder/apps/backend/internal/domain"
 )
 
 type Store struct {

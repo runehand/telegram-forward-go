@@ -6,7 +6,7 @@
     "apps/*"
   ],
   "scripts": {
-    "dev": "turbo run dev --parallel",
+    "dev": "turbo run dev",
     "build": "turbo run build",
     "dev:backend": "npm run dev --workspace @zenfl/backend",
     "dev:frontend": "npm run dev --workspace @zenfl/frontend",

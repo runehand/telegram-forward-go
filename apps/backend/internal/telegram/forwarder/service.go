@@ -16,10 +16,11 @@ import (
 
 	"zenfl-forwarder/apps/backend/internal/config"
 	"zenfl-forwarder/apps/backend/internal/domain"
+	"zenfl-forwarder/apps/backend/internal/jobparse"
 )
 
 type messageStore interface {
-	SaveMessage(ctx context.Context, msg domain.JobMessage) error
+	SaveJob(ctx context.Context, job domain.Job) error
 }
 
 type Service struct {
@@ -49,8 +50,12 @@ func (s *Service) Run(ctx context.Context) error {
 	client := telegram.NewClient(s.cfg.APIID, s.cfg.APIHash, telegram.Options{SessionStorage: storage, Logger: s.log, UpdateHandler: updates})
 	return client.Run(ctx, func(ctx context.Context) error {
 		s.api = client.API()
-		if err := client.Auth().IfNecessary(ctx, s.authFlow()); err != nil { return err }
-		if err := s.resolvePeers(ctx); err != nil { return err }
+		if err := client.Auth().IfNecessary(ctx, s.authFlow()); err != nil {
+			return err
+		}
+		if err := s.resolvePeers(ctx); err != nil {
+			return err
+		}
 		s.log.Info("forwarder is running", zap.String("zenfl", s.cfg.ZenflUsername), zap.Int("targets", len(s.targets)))
 		<-ctx.Done()
 		return ctx.Err()
@@ -59,8 +64,12 @@ func (s *Service) Run(ctx context.Context) error {
 
 func (s *Service) handleMessage(ctx context.Context, msg tg.MessageClass) error {
 	m, ok := msg.(*tg.Message)
-	if !ok || m.Out { return nil }
-	if extractSenderID(m) != s.zenflID { return nil }
+	if !ok || m.Out {
+		return nil
+	}
+	if extractSenderID(m) != s.zenflID {
+		return nil
+	}
 
 	s.log.Info("received zenfl message", messageLogFields(m)...)
 	s.logRawMessageJSON(m)
@@ -69,14 +78,13 @@ func (s *Service) handleMessage(ctx context.Context, msg tg.MessageClass) error 
 	jobLink := extractFirstURLButtonLink(m.ReplyMarkup)
 
 	if s.store != nil {
-		err := s.store.SaveMessage(ctx, domain.JobMessage{
-			TelegramMsg: m.ID,
-			SenderID:    extractSenderID(m),
-			PeerID:      peerToString(m.PeerID),
-			Text:        m.Message,
-			JobLink:     jobLink,
-			ReceivedAt:  time.Now().UTC(),
-		})
+		job := jobparse.FromTelegramText(m.Message, jobLink)
+		job.TelegramMsgID = m.ID
+		job.SenderID = extractSenderID(m)
+		job.PeerID = peerToString(m.PeerID)
+		job.ReceivedAt = time.Now().UTC()
+
+		err := s.store.SaveJob(ctx, job)
 		if err != nil {
 			s.log.Warn("failed to persist message", zap.Int("message_id", m.ID), zap.Error(err))
 		}
@@ -117,13 +125,17 @@ func messageLogFields(m *tg.Message) []zap.Field {
 func buildOutgoingTextWithJobLink(m *tg.Message) string {
 	base := strings.TrimRight(m.Message, "\n \t")
 	link := extractFirstURLButtonLink(m.ReplyMarkup)
-	if link == "" || strings.Contains(base, link) { return base }
+	if link == "" || strings.Contains(base, link) {
+		return base
+	}
 	return base + "\n\nUpwork job link: " + link
 }
 
 func extractFirstURLButtonLink(markup tg.ReplyMarkupClass) string {
 	inline, ok := markup.(*tg.ReplyInlineMarkup)
-	if !ok { return "" }
+	if !ok {
+		return ""
+	}
 	for _, row := range inline.Rows {
 		for _, btn := range row.Buttons {
 			if u, ok := btn.(*tg.KeyboardButtonURL); ok {
@@ -136,21 +148,56 @@ func extractFirstURLButtonLink(markup tg.ReplyMarkupClass) string {
 
 func extractSenderID(m *tg.Message) int64 {
 	if m.FromID != nil {
-		switch from := m.FromID.(type) { case *tg.PeerUser: return from.UserID; case *tg.PeerChannel: return from.ChannelID; case *tg.PeerChat: return from.ChatID }
+		switch from := m.FromID.(type) {
+		case *tg.PeerUser:
+			return from.UserID
+		case *tg.PeerChannel:
+			return from.ChannelID
+		case *tg.PeerChat:
+			return from.ChatID
+		}
 	}
-	switch p := m.PeerID.(type) { case *tg.PeerUser: return p.UserID; case *tg.PeerChannel: return p.ChannelID; case *tg.PeerChat: return p.ChatID; default: return 0 }
+	switch p := m.PeerID.(type) {
+	case *tg.PeerUser:
+		return p.UserID
+	case *tg.PeerChannel:
+		return p.ChannelID
+	case *tg.PeerChat:
+		return p.ChatID
+	default:
+		return 0
+	}
 }
 
 func peerToString(peer tg.PeerClass) string {
-	if peer == nil { return "<nil>" }
-	switch p := peer.(type) { case *tg.PeerUser: return fmt.Sprintf("user:%d", p.UserID); case *tg.PeerChat: return fmt.Sprintf("chat:%d", p.ChatID); case *tg.PeerChannel: return fmt.Sprintf("channel:%d", p.ChannelID); default: return reflect.TypeOf(peer).String() }
+	if peer == nil {
+		return "<nil>"
+	}
+	switch p := peer.(type) {
+	case *tg.PeerUser:
+		return fmt.Sprintf("user:%d", p.UserID)
+	case *tg.PeerChat:
+		return fmt.Sprintf("chat:%d", p.ChatID)
+	case *tg.PeerChannel:
+		return fmt.Sprintf("channel:%d", p.ChannelID)
+	default:
+		return reflect.TypeOf(peer).String()
+	}
 }
 
 func (s *Service) logRawMessageJSON(m *tg.Message) {
 	raw, err := json.MarshalIndent(m, "", "  ")
-	if err != nil { s.log.Warn("failed to marshal message json", zap.Int("message_id", m.ID), zap.Error(err)); return }
+	if err != nil {
+		s.log.Warn("failed to marshal message json", zap.Int("message_id", m.ID), zap.Error(err))
+		return
+	}
 	s.log.Info("received zenfl message json", zap.Int("message_id", m.ID), zap.String("json", string(raw)))
 }
 
-func typeName(v interface{}) string { if v == nil { return "<nil>" }; return reflect.TypeOf(v).String() }
+func typeName(v interface{}) string {
+	if v == nil {
+		return "<nil>"
+	}
+	return reflect.TypeOf(v).String()
+}
 func repliesCount(r tg.MessageReplies) int { return r.Replies }

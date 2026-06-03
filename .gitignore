@@ -14,8 +14,11 @@ telegram_app.info
 # Build/cache
 bin/
 dist/
+.cache/
+.turbo/
+node_modules/
 
 # Frontend
-frontend/node_modules
-frontend/dist
+apps/frontend/node_modules
+apps/frontend/dist
 

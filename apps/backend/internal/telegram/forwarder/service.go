@@ -14,8 +14,8 @@ import (
 	"github.com/gotd/td/tgerr"
 	"go.uber.org/zap"
 
-	"zenfl-forwarder/backend/internal/config"
-	"zenfl-forwarder/backend/internal/domain"
+	"zenfl-forwarder/apps/backend/internal/config"
+	"zenfl-forwarder/apps/backend/internal/domain"
 )
 
 type messageStore interface {

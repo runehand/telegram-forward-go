@@ -8,11 +8,11 @@ import (
 	"sync"
 	"syscall"
 
-	"zenfl-forwarder/backend/internal/config"
-	"zenfl-forwarder/backend/internal/platform/logx"
-	"zenfl-forwarder/backend/internal/restapi"
-	"zenfl-forwarder/backend/internal/store/mongo"
-	"zenfl-forwarder/backend/internal/telegram/forwarder"
+	"zenfl-forwarder/apps/backend/internal/config"
+	"zenfl-forwarder/apps/backend/internal/platform/logx"
+	"zenfl-forwarder/apps/backend/internal/restapi"
+	"zenfl-forwarder/apps/backend/internal/store/mongo"
+	"zenfl-forwarder/apps/backend/internal/telegram/forwarder"
 )
 
 func Run(cfg config.Config) error {

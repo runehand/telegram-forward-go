@@ -10,18 +10,28 @@ Monorepo for a Telegram-to-job-board platform.
 - REST API with demo auth
 - React + Vite demo job-board frontend
 
-## Backend Run
+## Dev Run
 
 1. Copy `.env.example` to `.env` and fill Telegram values.
 2. Start MongoDB locally.
-3. Run:
+3. Install workspace tooling:
 
 ```bash
-go mod tidy
-go run ./backend/cmd/server
+npm install
 ```
 
-Demo API auth user (auto-created at startup):
+4. Start backend and frontend together:
+
+```bash
+npm run dev
+```
+
+This runs:
+
+- Go backend from `apps/backend`
+- Vite frontend from `apps/frontend`
+
+Demo API auth user (auto-created at backend startup):
 
 - `demo@zenfl.local`
 - `demo1234`
@@ -33,12 +43,11 @@ Demo API auth user (auto-created at startup):
 - `GET /api/auth/me` (Bearer token)
 - `GET /api/jobs` (Bearer token)
 
-## Frontend Run
+## Individual Run
 
 ```bash
-cd frontend
-npm install
-npm run dev
+npm run dev:backend
+npm run dev:frontend
 ```
 
 Optional frontend env:

@@ -1,0 +1,19 @@
+{
+  "name": "zenfl-forwarder",
+  "private": true,
+  "packageManager": "npm@10.9.4",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev --parallel",
+    "build": "turbo run build",
+    "dev:backend": "npm run dev --workspace @zenfl/backend",
+    "dev:frontend": "npm run dev --workspace @zenfl/frontend",
+    "build:backend": "npm run build --workspace @zenfl/backend",
+    "build:frontend": "npm run build --workspace @zenfl/frontend"
+  },
+  "devDependencies": {
+    "turbo": "^2.5.4"
+  }
+}
